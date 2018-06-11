@@ -7,35 +7,35 @@ class Scraper
     #is a class method that scrapes the student index page ('./fixtures/student-site/index.html') and a returns an array
     # of hashes in which each hash represents one student
     # need to return an array to iterate over to grab the information I want.
-    doc = Nokogiri::HTML(open(index_url))
-    students = []
-    doc.css("div.roster-cards-container").each do |card|
-      card.css(".student-card a").each do |student|
-        student_profile_link = "#{student.attr('href')}"
-        student_location = student.css('.student-location').text
-        student_name = student.css('.student-name').text
-        students << {name: student_name, location: student_location, profile_url: student_profile_link}
-      end
-    students
-  end
+    student_ary = []
+   index_page = Nokogiri::HTML(open(index_url))
+   index_page.css(".roster-cards-container .card-text-container").each_with_index do |student, a_tag_num|
+     hash = {}
+     hash[:location] = student.css("p.student-location").text
+     hash[:name] = student.css("h4.student-name").text
+     hash[:profile_url] = index_page.css("a")[a_tag_num+1]["href"]
+     student_ary << hash
+   end
+   student_ary
+ end
 
   def self.scrape_profile_page(profile_url)
     profile = {}
-    page = Nokogiri::HTML(open(index_url))
-    links = page.css(".social-icon-container").children.css("a").map { |el| el.attribute('href').value}
-    links.each do |link|
-      if link.include?("linkedin")
-        profile[:linkedin] = link
-      elsif link.include?("github")
-        profile[:github] = link
-      elsif link.include?("twitter")
-        profile[:twitter] = link
-      else
-        profile[:blog] = link
+     page = Nokogiri::HTML(open(profile_url))
+     urls = page.css(".social-icon-container a")
+     urls.each do |link|
+       if  link["href"].include?("twitter")
+         profile[:twitter] = link["href"]
+       elsif link["href"].include?("linkedin")
+         profile[:linkedin] = link["href"]
+       elsif link["href"].include?("github")
+         profile[:github] = link["href"]
+       elsif link["href"]
+         profile[:blog] = link["href"]
+       end
      end
-   end
-   profile[:profile_quote]  page.css(".vitals-text-container div.profile-quote").text
-   profile[:bio] = page.css(".details-container .description-holder p").text
-   profile
+     profile[:profile_quote] = page.css(".vitals-text-container div.profile-quote").text
+     profile[:bio] = page.css(".details-container .description-holder p").text
+     profile
    end
  end
