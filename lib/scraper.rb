@@ -8,7 +8,7 @@ class Scraper
     # of hashes in which each hash represents one student
     # need to return an array to iterate over to grab the information I want.
     doc = Nokogiri::HTML(open(index_url))
-    students_array = []
+    students = []
     doc.css("div.roster-cards-container").each do |card|
       card.css(".student-card a").each do |student|
         student_profile_link = "#{student.attr('href')}"
