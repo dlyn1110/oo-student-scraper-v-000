@@ -21,6 +21,20 @@ class Scraper
   end
 
   def self.scrape_profile_page(profile_url)
+    student = {}
+    profile_page = Nokogiri::HTML(open(index_url))
+    links = profile_page.css(".social-icon-container").children.css("a").map { |el| el.attribute('href').value}
+    links.each do |link|
+      if link.include?("linkedin")
+        student[:linkedin] = link
+      elseif link.include?("github")
+        student[:github] = link
+      elsif link.include?("twitter")
+        student[:twitter] = link
+      else
+        student[:blog] = link
+
+
 
   end
 
