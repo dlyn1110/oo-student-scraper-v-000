@@ -35,6 +35,7 @@ class Scraper
         student_hash[:blog] = link
      end
    end
-    
+   stu
+
 end
 end
